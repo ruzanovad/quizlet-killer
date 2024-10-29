@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Карточка{% endblock %}
+
+{% block content %}
+<h2>Карточка</h2>
+<p><strong>Вопрос:</strong></p>
+<div>{{ card.question | safe }}</div>
+<p><strong>Ответ:</strong></p>
+<div>{{ card.answer | safe }}</div>
+<p><strong>Тип:</strong> {{ card.card_type }}</p>
+<p><strong>Теги:</strong> {{ card.tags }}</p>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавить карточку{% endblock %}
+
+{% block content %}
+<h2>Добавить новую карточку</h2>
+<form method="post">
+    <p>Вопрос (LaTeX поддерживается):</p>
+    <textarea name="question" rows="5" cols="50"></textarea><br>
+    <p>Ответ (LaTeX поддерживается):</p>
+    <textarea name="answer" rows="5" cols="50"></textarea><br>
+    <p>Тип карточки:</p>
+    <input type="text" name="card_type"><br>
+    <p>Теги (через запятую):</p>
+    <input type="text" name="tags"><br><br>
+    <input type="submit" value="Добавить">
+</form>
+{% endblock %}

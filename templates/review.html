@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Повторение{% endblock %}
+
+{% block content %}
+<h2>Повторение карточки</h2>
+<p><strong>Вопрос:</strong></p>
+<div>{{ card.question | safe }}</div>
+<form action="{{ url_for('submit_review', card_id=card.id) }}" method="post">
+    <p><strong>Ответ:</strong></p>
+    <div>{{ card.answer | safe }}</div>
+    <p>Насколько хорошо вы вспомнили?</p>
+    <label><input type="radio" name="quality" value="5"> 5 - Легко вспомнил</label><br>
+    <label><input type="radio" name="quality" value="4"> 4 - Хорошо вспомнил</label><br>
+    <label><input type="radio" name="quality" value="3"> 3 - С небольшим усилием</label><br>
+    <label><input type="radio" name="quality" value="2"> 2 - Трудно вспомнил</label><br>
+    <label><input type="radio" name="quality" value="1"> 1 - Не вспомнил</label><br><br>
+    <input type="submit" value="Отправить">
+</form>
+{% endblock %}
