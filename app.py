@@ -3,11 +3,14 @@ from models import db, Card
 from datetime import datetime, timedelta
 from flask_migrate import Migrate
 
+# Create a new Flask application instance
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cards.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cards.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
+# Initialize Flask-Migrate for handling database migrations
 migrate = Migrate(app, db)
+
 
 def update_card_review(card, quality):
     if quality < 0 or quality > 5:
@@ -17,7 +20,9 @@ def update_card_review(card, quality):
         card.interval = 1
         card.review_count = 0
     else:
-        card.easiness_factor = card.easiness_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
+        card.easiness_factor = card.easiness_factor + (
+            0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)
+        )
         if card.easiness_factor < 1.3:
             card.easiness_factor = 1.3
 
@@ -34,48 +39,63 @@ def update_card_review(card, quality):
     card.last_reviewed = datetime.now()
     db.session.commit()
 
-@app.route('/')
-def index():
-    return render_template('index.html')
 
-@app.route('/cards')
+# Route to the home page
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+# Route to list all cards
+@app.route("/cards")
 def list_cards():
     cards = Card.query.all()
-    return render_template('index.html', cards=cards)
+    return render_template("card_list.html", cards=cards)
 
-@app.route('/card/<int:card_id>')
+
+@app.route("/card/<int:card_id>")
 def show_card(card_id):
     card = Card.query.get_or_404(card_id)
-    return render_template('card.html', card=card)
+    return render_template("card.html", card=card)
 
-@app.route('/add_card', methods=['GET', 'POST'])
+
+@app.route("/add_card", methods=["GET", "POST"])
 def add_card():
-    if request.method == 'POST':
-        question = request.form['question']
-        answer = request.form['answer']
-        card_type = request.form['card_type']
-        tags = request.form['tags']
-        new_card = Card(question=question, answer=answer, card_type=card_type, tags=tags)
+    if request.method == "POST":
+        question = request.form["question"]
+        answer = request.form["answer"]
+        card_type = request.form["card_type"]
+        tags = request.form["tags"]
+        new_card = Card(
+            question=question, answer=answer, card_type=card_type, tags=tags
+        )
         db.session.add(new_card)
         db.session.commit()
-        return redirect(url_for('list_cards'))
-    return render_template('add_card.html')
+        return redirect(url_for("list_cards"))
+    return render_template("add_card.html")
 
-@app.route('/review')
+
+@app.route("/review")
 def review_cards():
-    cards_to_review = Card.query.filter(Card.next_review <= datetime.now()).order_by(Card.next_review).all()
+    cards_to_review = (
+        Card.query.filter(Card.next_review <= datetime.now())
+        .order_by(Card.next_review)
+        .all()
+    )
     if cards_to_review:
         card = cards_to_review[0]
-        return render_template('review.html', card=card)
+        return render_template("review.html", card=card)
     else:
         return "Нет карточек для повторения на сегодня!"
 
-@app.route('/submit_review/<int:card_id>', methods=['POST'])
+
+@app.route("/submit_review/<int:card_id>", methods=["POST"])
 def submit_review(card_id):
-    quality = int(request.form['quality'])
+    quality = int(request.form["quality"])
     card = Card.query.get_or_404(card_id)
     update_card_review(card, quality)
-    return redirect(url_for('review_cards'))
+    return redirect(url_for("review_cards"))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)

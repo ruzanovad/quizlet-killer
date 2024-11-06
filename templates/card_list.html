@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Список карточек{% endblock %}
+
+{% block content %}
+<h1>Карточки для повторения</h1>
+{% if cards %}
+<ul>
+    {% for card in cards %}
+    <li>{{ card.question }} - {{ card.answer }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Нет карточек для отображения.</p>
+{% endif %}
+{% endblock %}
