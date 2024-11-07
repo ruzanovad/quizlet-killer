@@ -1,15 +1,34 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from models import db, Card
 from datetime import datetime, timedelta
 from flask_migrate import Migrate
+import os
+import dotenv
+from werkzeug.utils import secure_filename
+
+dotenv.load_dotenv()
+
+# Images from cards
+UPLOAD_FOLDER = "static/uploads"
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+
 
 # Create a new Flask application instance
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cards.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+app.secret_key = os.getenv("SECRET_KEY")  # Для flash сообщений
+
 db.init_app(app)
 # Initialize Flask-Migrate for handling database migrations
 migrate = Migrate(app, db)
+
+
+# Checks if file what you want to add into the card is allowed(picture)
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def update_card_review(card, quality):
@@ -66,27 +85,86 @@ def add_card():
         answer = request.form["answer"]
         card_type = request.form["card_type"]
         tags = request.form["tags"]
+
         new_card = Card(
             question=question, answer=answer, card_type=card_type, tags=tags
         )
+
+        # Обработка загрузки изображений
+        if "question_image" in request.files:
+            file = request.files["question_image"]
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+                new_card.question += (
+                    f'<img src="/{app.config["UPLOAD_FOLDER"]}/{filename}" alt="Image">'
+                )
+
+        if "answer_image" in request.files:
+            file = request.files["answer_image"]
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+                new_card.answer += (
+                    f'<img src="/{app.config["UPLOAD_FOLDER"]}/{filename}" alt="Image">'
+                )
+
         db.session.add(new_card)
         db.session.commit()
+        flash("Карточка успешно добавлена!", "success")
         return redirect(url_for("list_cards"))
     return render_template("add_card.html")
 
 
+# adding card
+@app.route("/edit_card/<int:card_id>", methods=["GET", "POST"])
+def edit_card(card_id):
+    card = Card.query.get_or_404(card_id)
+    if request.method == "POST":
+        card.question = request.form["question"]
+        card.answer = request.form["answer"]
+        card.card_type = request.form["card_type"]
+        card.tags = request.form["tags"]
+
+        if "question_image" in request.files:
+            file = request.files["question_image"]
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+                card.question += (
+                    f'<img src="/{app.config["UPLOAD_FOLDER"]}/{filename}" alt="Image">'
+                )
+
+        if "answer_image" in request.files:
+            file = request.files["answer_image"]
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+                card.answer += (
+                    f'<img src="/{app.config["UPLOAD_FOLDER"]}/{filename}" alt="Image">'
+                )
+
+        db.session.commit()
+
+        # flash message
+        flash("Карточка успешно обновлена!", "success")
+        return redirect(url_for("list_cards"))
+    return render_template("edit_card.html", card=card)
+
+
 @app.route("/review")
 def review_cards():
+    mode = request.args.get("mode", "standard")  # По умолчанию стандартный режим
     cards_to_review = (
         Card.query.filter(Card.next_review <= datetime.now())
         .order_by(Card.next_review)
         .all()
     )
-    if cards_to_review:
-        card = cards_to_review[0]
-        return render_template("review.html", card=card)
-    else:
+    if not cards_to_review:
         return "Нет карточек для повторения на сегодня!"
+
+    card = cards_to_review[0]
+    return render_template("review.html", card=card, mode=mode)
 
 
 @app.route("/submit_review/<int:card_id>", methods=["POST"])
