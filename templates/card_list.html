@@ -4,13 +4,28 @@
 
 {% block content %}
 <h1>Карточки для повторения</h1>
-{% if cards %}
-<ul>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Вопрос</th>
+        <th>Ответ</th>
+        <th>Тип</th>
+        <th>Тэги</th>
+        <th>Действия</th>
+    </tr>
     {% for card in cards %}
-    <li>{{ card.question }} - {{ card.answer }}</li>
+    <tr>
+        <td>{{ card.id }}</td>
+        <td>{{ card.question|safe }}</td>
+        <td>{{ card.answer|safe }}</td>
+        <td>{{ card.card_type }}</td>
+        <td>{{ card.tags }}</td>
+        <td>
+            <a href="{{ url_for('show_card', card_id=card.id) }}">Просмотр</a> |
+            <a href="{{ url_for('edit_card', card_id=card.id) }}">Редактировать</a>
+        </td>
+    </tr>
     {% endfor %}
-</ul>
-{% else %}
-<p>Нет карточек для отображения.</p>
-{% endif %}
+</table>
 {% endblock %}

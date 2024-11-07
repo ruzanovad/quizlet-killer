@@ -4,6 +4,8 @@
 
 {% block content %}
 <h2>Карточка</h2>
+<p><strong>ID:</strong></p>
+<div>{{ card.id | safe }}</div>
 <p><strong>Вопрос:</strong></p>
 <div>{{ card.question | safe }}</div>
 <p><strong>Ответ:</strong></p>

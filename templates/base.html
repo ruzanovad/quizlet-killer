@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Мое приложение{% endblock %}</title>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -11,9 +14,9 @@
         <a href="{{ url_for('index') }}">Главная</a> |
         <a href="{{ url_for('list_cards') }}">Карточки</a> |
         <a href="{{ url_for('add_card') }}">Добавить карточку</a> |
-        <a href="{{ url_for('review_cards') }}">Повторение</a>
     </nav>
     <hr>
+
     {% block content %}{% endblock %}
 </body>
 </html>

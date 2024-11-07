@@ -3,16 +3,23 @@
 {% block title %}Добавить карточку{% endblock %}
 
 {% block content %}
-<h2>Добавить новую карточку</h2>
-<form method="post">
+<form method="POST" enctype="multipart/form-data">
     <p>Вопрос (LaTeX поддерживается):</p>
     <textarea name="question" rows="5" cols="50"></textarea><br>
+    <label for="question_image">Добавить изображение к вопросу:</label>
+    <input type="file" name="question_image" accept="image/*"><br><br>
+
+
     <p>Ответ (LaTeX поддерживается):</p>
     <textarea name="answer" rows="5" cols="50"></textarea><br>
+    <label for="answer_image">Добавить изображение к ответу:</label>
+    <input type="file" name="answer_image" accept="image/*"><br><br>
+    
     <p>Тип карточки:</p>
     <input type="text" name="card_type"><br>
     <p>Теги (через запятую):</p>
     <input type="text" name="tags"><br><br>
     <input type="submit" value="Добавить">
 </form>
+<a href="{{ url_for('list_cards') }}">Назад к списку карточек</a>
 {% endblock %}

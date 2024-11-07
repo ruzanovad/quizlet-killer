@@ -6,15 +6,17 @@
 <h2>Повторение карточки</h2>
 <p><strong>Вопрос:</strong></p>
 <div>{{ card.question | safe }}</div>
-<form action="{{ url_for('submit_review', card_id=card.id) }}" method="post">
-    <p><strong>Ответ:</strong></p>
-    <div>{{ card.answer | safe }}</div>
-    <p>Насколько хорошо вы вспомнили?</p>
-    <label><input type="radio" name="quality" value="5"> 5 - Легко вспомнил</label><br>
-    <label><input type="radio" name="quality" value="4"> 4 - Хорошо вспомнил</label><br>
-    <label><input type="radio" name="quality" value="3"> 3 - С небольшим усилием</label><br>
-    <label><input type="radio" name="quality" value="2"> 2 - тяжело...</label><br>
-    <label><input type="radio" name="quality" value="1"> 1 - Не вспомнил</label><br><br>
-    <input type="submit" value="Отправить">
+{% if mode == 'standard' %}
+<form action="{{ url_for('submit_review', card_id=card.id) }}" method="POST">
+    <label for="quality">Оцените качество вашего ответа (0-5):</label>
+    <input type="number" id="quality" name="quality" min="0" max="5" required>
+    <button type="submit">Отправить</button>
 </form>
+{% elif mode == 'multiple_choice' %}
+<!-- режим множественного выбора -->
+{% elif mode == 'flash' %}
+<!-- режим флэш-карточек -->
+{% endif %}
+
+<a href="{{ url_for('review_cards') }}">Следующая карточка</a>
 {% endblock %}

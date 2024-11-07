@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Редактировать карточку{% endblock %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data">
+    <label for="question">Вопрос:</label><br>
+    <textarea id="question" name="question" rows="4" cols="50">{{ card.question|safe }}</textarea><br>
+    <label for="question_image">Добавить изображение к вопросу:</label>
+    <input type="file" name="question_image" accept="image/*"><br><br>
+
+    <label for="answer">Ответ:</label><br>
+    <textarea id="answer" name="answer" rows="4" cols="50">{{ card.answer|safe }}</textarea><br>
+    <label for="answer_image">Добавить изображение к ответу:</label>
+    <input type="file" name="answer_image" accept="image/*"><br><br>
+
+    <label for="card_type">Тип карты:</label>
+    <input type="text" id="card_type" name="card_type" value="{{ card.card_type }}"><br><br>
+
+    <label for="tags">Тэги (через запятую):</label>
+    <input type="text" id="tags" name="tags" value="{{ card.tags }}"><br><br>
+
+    <button type="submit">Сохранить</button>
+</form>
+<a href="{{ url_for('list_cards') }}">Назад к списку карточек</a>
+{% endblock %}
