@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Мое приложение{% endblock %}</title>
+    <!-- Определяем заголовок страницы, который можно изменить в дочерних шаблонах -->
+
+    <!-- Подключение Polyfill для поддержки ES6 в старых браузерах -->
+    <!-- Polyfills allow web developers to use an API regardless of whether or not it is supported by a browser, and usually
+    with minimal overhead. Typically they first check if a browser supports an API, and use it if available, otherwise
+    using their own implementation. -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    <!-- Подключение MathJax для поддержки LaTeX (формул) -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
     </script>
-    {% block head %}{% endblock %}
+    {% block head %}{% endblock %} <!-- Раздел для дополнительных скриптов и стилей, добавляемых в дочерних шаблонах -->
 </head>
+
 <body>
-    <nav>
+    <nav> <!-- Навигационная панель со ссылками на основные страницы -->
         <a href="{{ url_for('index') }}">Главная</a> |
         <a href="{{ url_for('list_cards') }}">Карточки</a> |
         <a href="{{ url_for('add_card') }}">Добавить карточку</a> |
     </nav>
     <hr>
 
-    {% block content %}{% endblock %}
+    {% block content %}{% endblock %} <!-- Основной контент страницы, который заполняется в дочерних шаблонах -->
 </body>
+
 </html>
