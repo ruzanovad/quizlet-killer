@@ -68,7 +68,7 @@ def index():
 # Route to list all cards
 @app.route("/cards")
 def list_cards():
-    cards = Card.query.all()
+    cards = Card.query.order_by(Card.next_review).all()
     return render_template("card_list.html", cards=cards)
 
 
@@ -154,7 +154,7 @@ def edit_card(card_id):
 
 @app.route("/review")
 def review_cards():
-    mode = request.args.get("mode", "standard")  # По умолчанию стандартный режим
+    mode = request.args.get("mode", "flash")  # По умолчанию flash режим
     cards_to_review = (
         Card.query.filter(Card.next_review <= datetime.now())
         .order_by(Card.next_review)
